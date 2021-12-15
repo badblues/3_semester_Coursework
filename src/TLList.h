@@ -4,10 +4,11 @@
 using namespace std;
 
 //TLLIST for TwoLevelledList
+//TODO balancing;
+//TODO copy constructor
+//TODO sorted insert
 //TODO resize
-//TODO lib
 //TODO operators
-//TODO sort, sorted insert balancing
 //TODO saving and loading from bin
 //TODO interacting with strings
 //TODO menu
@@ -24,7 +25,7 @@ template <class T>
 struct node {
     elem<T>* head;
     struct node* next;
-    unsigned int size_;
+    uint size_;
     node(T* o);
     node();
     ~node();
@@ -37,24 +38,30 @@ class TLList {
         TLList(T* obj);
         ~TLList();
         T* getCurr();
-        unsigned int getSize();
-        unsigned int getCurrListSize();
+        uint getSize();
+        uint getCurrListSize();
         void begin();
         void nextList();
         void nextElem();
         void add(T* obj);
         void addList();
-        void insertList(unsigned int pos);
-        void removeList(unsigned int pos);
-        void remove(unsigned int list_num, unsigned int elem_pos);
-        void insert(unsigned int list_num, unsigned int elem_pos, T* obj);
+        void insertList(uint pos);
+        void removeList(uint pos);
+        void remove(uint list_num, uint elem_pos);
+        void insert(uint list_num, uint elem_pos, T* obj);
+        void sortLists();
+        void balance();
+        void compress();
         template <class V>
         friend istream& operator >> (istream& is, TLList<V>& tl_list);
         template <class V>
         friend ostream& operator << (ostream& os, TLList<V>& tl_list);
     private:
-        unsigned int capacity_;
-        unsigned int size_;
+        void swap(uint l, uint p);
+        elem<T>* getItem(uint l, uint p);
+        node<T>* getNode(uint l);
+        uint capacity_;
+        uint size_;
         node<T>* node_head_;
         node<T>* curr_n_;
         elem<T>* curr_e_;
