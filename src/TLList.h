@@ -4,8 +4,8 @@
 using namespace std;
 
 //TLLIST for TwoLevelledList
-//Todo add, insert, remove
-//TODO googletest
+//TODO resize
+//TODO lib
 //TODO operators
 //TODO sort, sorted insert balancing
 //TODO saving and loading from bin
@@ -24,8 +24,9 @@ template <class T>
 struct node {
     elem<T>* head;
     struct node* next;
-    int size_;
+    unsigned int size_;
     node(T* o);
+    node();
     ~node();
 };
 
@@ -35,15 +36,26 @@ class TLList {
         TLList();
         TLList(T* obj);
         ~TLList();
-    void add(T* obj);
-    void resize(int newsize);
-    template <class V>
+        T* getCurr();
+        unsigned int getSize();
+        unsigned int getCurrListSize();
+        void begin();
+        void nextList();
+        void nextElem();
+        void add(T* obj);
+        void addList();
+        void insertList(unsigned int pos);
+        void removeList(unsigned int pos);
+        void remove(unsigned int list_num, unsigned int elem_pos);
+        void insert(unsigned int list_num, unsigned int elem_pos, T* obj);
+        template <class V>
         friend istream& operator >> (istream& is, TLList<V>& tl_list);
         template <class V>
         friend ostream& operator << (ostream& os, TLList<V>& tl_list);
     private:
-        int capacity_;
-        node<T>* head_;
+        unsigned int capacity_;
+        unsigned int size_;
+        node<T>* node_head_;
         node<T>* curr_n_;
         elem<T>* curr_e_;
 };

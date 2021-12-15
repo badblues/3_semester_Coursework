@@ -8,3 +8,4 @@ set(SOURCES src/TLList.h src/TLList.inl)
 add_executable(Coursework main.cpp ${SOURCES})
 add_definitions(-Wall)
 
+add_subdirectory(googletest)
