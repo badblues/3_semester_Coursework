@@ -43,6 +43,47 @@ TLList<T>::TLList(T* object_ptr_) {
     capacity_ = 10;
 }
 
+template<class T>
+TLList<T>::TLList(TLList<T> &obj) {
+    node<T>* ntmp = node_head_;
+    node<T>* ntmp2 = obj.node_head_;
+    if (ntmp2) {
+        ntmp = new node<T>;
+        size_ = 1;
+    }
+    while(ntmp2) {
+        elem<T>* etmp2;
+        elem<T>* etmp;
+        etmp2 = ntmp2->head;
+        if (etmp2) {
+            T** tmp = new T*;
+            T* tmp2 = new T;
+            *tmp2 = *(etmp2->obj);
+            *tmp = tmp2;
+            etmp = new elem<T>(*tmp);
+            ntmp->head = etmp;
+            etmp2 = etmp2->next;
+            ntmp->size_ = 1;
+        }
+        while(etmp2) {
+            T** tmp = new T*;
+            T* tmp2 = new T;
+            *tmp2 = *(etmp2->obj);
+            *tmp = tmp2;
+            etmp->next = new elem<T>(*tmp);
+            etmp = etmp->next;
+            etmp2 = etmp2->next;
+            ntmp->size_++;
+        }
+        ntmp2 = ntmp2->next;
+        if (ntmp2) {
+            ntmp->next = new node<T>;
+            ntmp = ntmp->next;
+            size_++;    // move up
+        }
+    }
+}
+
 template<typename T>
 TLList<T>::~TLList() {
     curr_n_ = node_head_;
@@ -56,14 +97,17 @@ TLList<T>::~TLList() {
 template<class V>
 ostream &operator<<(ostream &os, TLList<V> &tl_list) {
     node<V>* ntmp = tl_list.node_head_;
+    int ct = 0;
     while (ntmp != nullptr) {
         elem<V>* etmp = ntmp->head;
+        os << "[" << ct << "]: ";
         while (etmp != nullptr) {
             os << *(etmp->obj) << " ";
             etmp = etmp->next;
         }
         os << "\n";
         ntmp = ntmp->next;
+        ct++;
     }
     return os;
 }

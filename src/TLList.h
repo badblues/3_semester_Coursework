@@ -5,6 +5,7 @@ using namespace std;
 
 //TLLIST for TwoLevelledList
 //TODO balancing;
+//TODO deelting unused lists after compression
 //TODO copy constructor
 //TODO sorted insert
 //TODO resize
@@ -36,6 +37,7 @@ class TLList {
     public:
         TLList();
         TLList(T* obj);
+        TLList(TLList<T> &obj);
         ~TLList();
         T* getCurr();
         uint getSize();

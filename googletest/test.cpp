@@ -74,7 +74,24 @@ TEST(LIST, compress) {
     l3.insert(1, 1, new int(-9));
     l3.insert(1, 2, new int(5));
     l3.insert(1, 2, new int(12));
+    std::cout << l3;
     l3.compress();
     l3.sortLists();
     std::cout << l3;
+}
+
+TEST(LIST, copy_cons) {
+    TLList<int> l3;
+    l3.add(new int(1));
+    l3.add(new int(4));
+    l3.add(new int(3));
+    l3.addList();
+    l3.addList();
+    l3.insert(2, 0, new int(8));
+    l3.insert(2, 1, new int(-9));
+    l3.insert(2, 2, new int(5));
+    l3.insert(2, 2, new int(12));
+    TLList<int> l4(l3);
+    std::cout << l3;
+    std::cout << l4;
 }
