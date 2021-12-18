@@ -4,13 +4,6 @@
 using namespace std;
 
 //TLLIST for TwoLevelledList
-//TODO balancing;
-//TODO deelting unused lists after compression
-//TODO copy constructor
-//TODO sorted insert
-//TODO resize
-//TODO operators
-//TODO saving and loading from bin
 //TODO interacting with strings
 //TODO menu
 
@@ -18,7 +11,11 @@ template <class T>
 struct elem {
     T* obj;
     struct elem* next;
-    elem(T* o) { obj = o; next = nullptr; }
+    elem(T* o) {
+        obj = new T;
+        *obj = *o;
+        next = nullptr;
+    }
     ~elem() { delete obj; }
 };
 
@@ -36,12 +33,14 @@ template <class T>
 class TLList {
     public:
         TLList();
-        TLList(T* obj);
+        explicit TLList(T* obj);
         TLList(TLList<T> &obj);
         ~TLList();
         T* getCurr();
+        T* getElem(uint list_num, uint elem_pos);
         uint getSize();
         uint getCurrListSize();
+        uint getListSize(uint list_num);
         void begin();
         void nextList();
         void nextElem();
@@ -53,7 +52,11 @@ class TLList {
         void insert(uint list_num, uint elem_pos, T* obj);
         void sortLists();
         void balance();
-        void compress();
+        void orderedAdd(T* obj);
+        void orderedInsert(uint list_num, uint elem_pos, T* obj);
+        void resize(uint size);
+        void loadFromBin(ifstream& in);
+        void loadToBin(ofstream& out);
         template <class V>
         friend istream& operator >> (istream& is, TLList<V>& tl_list);
         template <class V>
