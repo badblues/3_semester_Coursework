@@ -31,8 +31,6 @@ template<typename T>
 TLList<T>::TLList() {
     size_ = 0;
     node_head_ = nullptr;
-    curr_n_ = nullptr;
-    curr_e_ = nullptr;
     capacity_ = 10;
 }
 
@@ -40,14 +38,12 @@ template<typename T>
 TLList<T>::TLList(T* object_ptr_) {
     size_ = 1;
     node_head_ = new node<T>(object_ptr_);
-    curr_n_ = node_head_;
-    curr_e_ = curr_n_->head;
     capacity_ = 10;
 }
 
 template<class T>
 TLList<T>::TLList(TLList<T> &obj) {
-    ;
+    capacity_ = obj.capacity_;
     node<T>* ntmp2 = obj.node_head_;
     node<T>* ntmp;
     if (ntmp2) {
@@ -82,19 +78,12 @@ TLList<T>::TLList(TLList<T> &obj) {
 
 template<typename T>
 TLList<T>::~TLList() {
-    curr_n_ = node_head_;
-    while (curr_n_ != nullptr) {
-        node<T>* ntmp = curr_n_;
-        curr_n_ = curr_n_->next;
-        delete ntmp;
+    node<T>* ntmp = node_head_;
+    while (ntmp != nullptr) {
+        node<T>* ntmp2 = ntmp;
+        ntmp = ntmp->next;
+        delete ntmp2;
     }
-}
-
-template<class T>
-T* TLList<T>::getCurr() {
-    if (curr_e_)
-        return curr_e_->obj;
-    return {};
 }
 
 template<class T>
@@ -108,52 +97,29 @@ uint TLList<T>::getSize() {
 }
 
 template<class T>
-uint TLList<T>::getCurrListSize() {
-    return curr_n_->size_;
-}
-
-template<class T>
 uint TLList<T>::getListSize(uint list_num) {
     return getNode(list_num)->size_;
-}
-
-template<class T>
-void TLList<T>::begin() {
-    curr_n_ = node_head_;
-    if (curr_n_) {
-        curr_e_ = curr_n_->head;
-    }
-}
-
-template<class T>
-void TLList<T>::nextList() {
-    if (curr_n_ && curr_n_->next) {
-        curr_n_ = curr_n_->next;
-        curr_e_ = curr_n_->head;
-    }
-}
-
-template<class T>
-void TLList<T>::nextElem() {
-    if (curr_e_ && curr_e_->next)
-        curr_e_ = curr_e_->next;
 }
 
 template<class T>
 void TLList<T>::add(T* obj) {
     if (!node_head_) {
         node_head_ = new node<T>(obj);
-        curr_n_ = node_head_;
-        curr_e_ = curr_n_->head;
         size_++;
     } else {
         node<T>* ntmp = node_head_;
         while (ntmp->size_ >= capacity_ && ntmp->next) ntmp = ntmp->next;
         if (ntmp->size_ < capacity_) {
             elem<T>* etmp = ntmp->head;
-            while (etmp->next) etmp = etmp->next;
-            etmp->next = new elem<T>(obj);
-            ntmp->size_++;
+            if (!etmp) {
+                etmp = new elem<T>(obj);
+                ntmp->head = etmp;
+                ntmp->size_++;
+            } else {
+                while (etmp->next) etmp = etmp->next;
+                etmp->next = new elem<T>(obj);
+                ntmp->size_++;
+            }
         } else {
             ntmp->next = new node<T>(obj);
             size_++;
@@ -220,16 +186,12 @@ void TLList<T>::remove(uint list_num, uint elem_pos) {
     if (elem_pos == 0) {
         elem<T>* etmp = ntmp->head;
         ntmp->head = ntmp->head->next;
-        if (curr_e_ == etmp)
-            curr_e_ = ntmp->head;
         delete etmp;
     } else {
         elem<T>* etmp = ntmp->head;
         for (uint i = 0; i < elem_pos - 1; i++) etmp = etmp->next;
         elem<T>* etmp2 = etmp->next;
         etmp->next = etmp->next->next;
-        if (curr_e_ == etmp2)
-            curr_e_ = etmp->next;
         delete etmp2;
     }
     ntmp->size_--;
@@ -288,19 +250,50 @@ void TLList<T>::orderedAdd(T* obj) {
 }
 
 template<class T>
-void TLList<T>::orderedInsert(uint list_num, uint elem_pos, T* obj) {
-    insert(list_num, elem_pos, obj);
+void TLList<T>::orderedInsert(uint list_num, T* obj) {
+    insert(list_num, 0, obj);
     sortLists();
 }
 
 template<class T>
 void TLList<T>::balance() {
-
+    uint sum = 0;
+    for (uint i = 0; i < size_; i++) sum += getListSize(i);
+    uint n = sum / size_;
+    for (uint i = 0; i < size_; i++) {
+        if (getListSize(i) >= n) continue;
+        for (uint j = 0; j < size_; j++) {
+            if (getListSize(j) <= n) continue;
+            insert(i, getListSize(i), getItem(j, getListSize(j) - 1)->obj);
+            remove(j, getListSize(j) - 1);
+        }
+    }
+    for (uint i = 0; i < sum - (n * size_); i++) {
+        if (getListSize(i) > n + 1) continue;
+        for (uint j = 0; j < size_; j++) {
+            if (getListSize(j) >= n + 1)  {
+                insert(i, getListSize(i), getItem(j, getListSize(j) - 1)->obj);
+                remove(j, getListSize(j) - 1);
+            }
+        }
+    }
 }
 
 template<class T>
-void TLList<T>::resize(uint size) {
-
+void TLList<T>::resize(uint new_size) {
+    bool flag;
+    for (uint i = 0; i < size_; i++) {
+        flag = true;
+        while (getListSize(i) > new_size) {
+            if (flag) {
+                insertList(i + 1);
+                flag = false;
+            }
+            insert(i + 1, getListSize(i + 1), getItem(i, getListSize(i)-1)->obj);
+            remove(i, getListSize(i) - 1);
+        }
+    }
+    capacity_ = new_size;
 }
 
 template<class T>
@@ -369,9 +362,9 @@ istream &operator>>(istream &is, TLList<V> &tl_list) {
 template<class V>
 ostream &operator<<(ostream &os, TLList<V> &tl_list) {
     node<V>* ntmp = tl_list.node_head_;
-    while (ntmp != nullptr) {
+    while (ntmp) {
         elem<V>* etmp = ntmp->head;
-        while (etmp != nullptr) {
+        while (etmp) {
             os << *(etmp->obj) << " ";
             etmp = etmp->next;
         }

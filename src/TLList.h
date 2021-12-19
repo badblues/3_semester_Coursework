@@ -5,8 +5,7 @@ using namespace std;
 typedef unsigned int uint;
 
 //TLLIST for TwoLevelledList
-//TODO interacting with strings
-//TODO menu
+//TODO test: loading big strings, file interaction, menu
 
 template <class T>
 struct elem {
@@ -37,14 +36,9 @@ class TLList {
         explicit TLList(T* obj);
         TLList(TLList<T> &obj);
         ~TLList();
-        T* getCurr();
         T* getElem(uint list_num, uint elem_pos);
         uint getSize();
-        uint getCurrListSize();
         uint getListSize(uint list_num);
-        void begin();
-        void nextList();
-        void nextElem();
         void add(T* obj);
         void addList();
         void insertList(uint pos);
@@ -53,9 +47,9 @@ class TLList {
         void insert(uint list_num, uint elem_pos, T* obj);
         void sortLists();
         void orderedAdd(T* obj);
-        void orderedInsert(uint list_num, uint elem_pos, T* obj);
+        void orderedInsert(uint list_num, T* obj);
         void balance();
-        void resize(uint size);
+        void resize(uint new_size);
         void loadFromBin(fstream& in);
         void loadToBin(fstream& out);
         template <class V>
@@ -69,8 +63,6 @@ class TLList {
         uint capacity_;
         uint size_;
         node<T>* node_head_;
-        node<T>* curr_n_;
-        elem<T>* curr_e_;
 };
 
 #include "TLList.inl"
