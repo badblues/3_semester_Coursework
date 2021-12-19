@@ -2,6 +2,7 @@
 #include <iostream>
 
 using namespace std;
+typedef unsigned int uint;
 
 //TLLIST for TwoLevelledList
 //TODO interacting with strings
@@ -51,12 +52,12 @@ class TLList {
         void remove(uint list_num, uint elem_pos);
         void insert(uint list_num, uint elem_pos, T* obj);
         void sortLists();
-        void balance();
         void orderedAdd(T* obj);
         void orderedInsert(uint list_num, uint elem_pos, T* obj);
+        void balance();
         void resize(uint size);
-        void loadFromBin(ifstream& in);
-        void loadToBin(ofstream& out);
+        void loadFromBin(fstream& in);
+        void loadToBin(fstream& out);
         template <class V>
         friend istream& operator >> (istream& is, TLList<V>& tl_list);
         template <class V>

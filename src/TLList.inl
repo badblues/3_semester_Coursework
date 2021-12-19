@@ -282,11 +282,6 @@ void TLList<T>::sortLists() {
 }
 
 template<class T>
-void TLList<T>::balance() {
-
-}
-
-template<class T>
 void TLList<T>::orderedAdd(T* obj) {
     add(obj);
     sortLists();
@@ -299,47 +294,54 @@ void TLList<T>::orderedInsert(uint list_num, uint elem_pos, T* obj) {
 }
 
 template<class T>
+void TLList<T>::balance() {
+
+}
+
+template<class T>
 void TLList<T>::resize(uint size) {
 
 }
 
 template<class T>
-void TLList<T>::loadFromBin(ifstream &in) {
-    while (node_head_)
-        removeList(0);
-    node<T>* ntmp;
-    if (in.peek() != EOF) {
-        node_head_ = ntmp = new node<T>;
-        size_ = 1;
-    }
-    T* tmp = new T;
-    while (in.peek() != EOF) {
-        int64_t c;
-        in.read((char*) &c, sizeof(int64_t));
-        in.seekg(-sizeof(int64_t), ios_base::cur);
-        elem<T>* etmp;
-        while (c != INT64_MAX) {
-            in.read((char*) tmp, sizeof(T));
-            if (!ntmp->head) {
-                etmp = ntmp->head = new elem<T>(tmp);
-            } else {
-                etmp = etmp->next = new elem<T>(tmp);
-            }
-            ntmp->size_++;
+void TLList<T>::loadFromBin(fstream &in) {
+    if (in.is_open()) {
+        while (node_head_)
+            removeList(0);
+        node<T>* ntmp;
+        if (in.peek() != EOF) {
+            node_head_ = ntmp = new node<T>;
+            size_ = 1;
+        }
+        T* tmp = new T;
+        while (in.peek() != EOF) {
+            int64_t c;
             in.read((char*) &c, sizeof(int64_t));
             in.seekg(-sizeof(int64_t), ios_base::cur);
+            elem<T>* etmp;
+            while (c != INT64_MAX) {
+                in.read((char*) tmp, sizeof(T));
+                if (!ntmp->head) {
+                    etmp = ntmp->head = new elem<T>(tmp);
+                } else {
+                    etmp = etmp->next = new elem<T>(tmp);
+                }
+                ntmp->size_++;
+                in.read((char*) &c, sizeof(int64_t));
+                in.seekg(-sizeof(int64_t), ios_base::cur);
+            }
+            in.seekg(sizeof(int64_t), ios_base::cur);
+            if (in.peek() != EOF) {
+                ntmp = ntmp->next = new node<T>;
+                size_++;
+            }
         }
-        in.seekg(sizeof(int64_t), ios_base::cur);
-        if (in.peek() != EOF) {
-            ntmp = ntmp->next = new node<T>;
-            size_++;
-        }
+        delete tmp;
     }
-    delete tmp;
 }
 
 template<class T>
-void TLList<T>::loadToBin(ofstream &out) {
+void TLList<T>::loadToBin(fstream &out) {
     if (out.is_open()) {
         node<T>* ntmp = node_head_;
         while (ntmp) {
