@@ -268,15 +268,17 @@ void TLList<T>::balance() {
             remove(j, getListSize(j) - 1);
         }
     }
-    for (uint i = 0; i < sum - (n * size_); i++) {
-        if (getListSize(i) > n + 1) continue;
-        for (uint j = 0; j < size_; j++) {
-            if (getListSize(j) >= n + 1)  {
-                insert(i, getListSize(i), getItem(j, getListSize(j) - 1)->obj);
-                remove(j, getListSize(j) - 1);
-            }
+    T* buf = new T[sum - (n * size_)];
+    int id = 0;
+    for (uint i = 0; i < size_; i++)
+        while (getListSize(i) > n) {
+            buf[id++] = *(getItem(i, n)->obj);
+            remove(i, n);
         }
+    for (uint i = 0; i < sum - (n * size_); i++) {
+        insert(i, n, buf+i);
     }
+    delete[] buf;
 }
 
 template<class T>

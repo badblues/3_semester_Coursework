@@ -1,9 +1,18 @@
 #include "menu.h"
 
-uint getChoice(uint l_gap, uint h_gap) {
+#ifdef __linux__
+#define clear_console_ "clear"
+#else
+#define clear_console_ "cls"
+#endif
+
+
+uint getChoice(uint l_gap, uint h_gap, const char* msg) {
     uint num;
-    do
+    do {
+        cout << msg;
         cin >> num;
+    }
     while((num < l_gap) || (num > h_gap));
     return num;
 }
@@ -36,29 +45,35 @@ void mainMenu(TLList<string>& object) {
     fstream f;
     string str;
     while (flag) {
-        system("clear");
+        system(clear_console_);
         cout << object;
         showMainMenu();
-        choice = getChoice(0, 13);
+        choice = getChoice(0, 13, "");
         switch (choice) {
             case 0:
                 flag = false;
                 break;
             case 1:
-                system("clear");
+                system(clear_console_);
                 object.addList();
                 break;
             case 2:
-                system("clear");
-                cout << "ENTER POSITION\n";
-                selected_node = getChoice(0, object.getSize());
-                object.insertList(selected_node);
+                system(clear_console_);
+                selected_node = getChoice(0, object.getSize(), "ENTER POSITION\n");
+                try  {
+                    object.insertList(selected_node);
+                } catch (exception &ex) {
+                    cout << ex.what() << "\n";
+                }
                 break;
             case 3:
-                system("clear");
-                cout << "ENTER POSITION\n";
-                selected_node = getChoice(0, object.getSize() - 1);
-                object.removeList(selected_node);
+                system(clear_console_);
+                selected_node = getChoice(0, object.getSize() - 1, "ENTER POSITION\n");
+                try {
+                    object.removeList(selected_node);
+                } catch (exception &ex) {
+                    cout << ex.what() << "\n";
+                }
                 break;
             case 4:
                 cout << "ENTER CONTENT\n";
@@ -68,18 +83,22 @@ void mainMenu(TLList<string>& object) {
             case 5:
                 cout << "ENTER CONTENT\n";
                 cin >> str;
-                cout << "ENTER LIST NUMBER\n";
-                selected_node = getChoice(0, object.getSize());
-                cout << "ENTER POSITION\n";
-                selected_elem = getChoice(0, object.getListSize(selected_node));
-                object.insert(selected_node, selected_elem, &str);
+                selected_node = getChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
+                selected_elem = getChoice(0, object.getListSize(selected_node), "ENTER POSITION\n");
+                try {
+                    object.insert(selected_node, selected_elem, &str);
+                } catch (exception &ex) {
+                    cout << ex.what() << "\n";
+                }
                 break;
             case 6:
-                cout << "ENTER LIST NUMBER\n";
-                selected_node = getChoice(0, object.getSize());
-                cout << "ENTER POSITION\n";
-                selected_elem = getChoice(0, object.getListSize(selected_node));
-                object.remove(selected_node, selected_elem);
+                selected_node = getChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
+                selected_elem = getChoice(0, object.getListSize(selected_node), "ENTER POSITION\n");
+                try {
+                    object.remove(selected_node, selected_elem);
+                } catch (exception &ex) {
+                    cout << ex.what() << "\n";
+                }
                 break;
             case 7:
                 cout << "ENTER CONTENT\n";
@@ -89,33 +108,30 @@ void mainMenu(TLList<string>& object) {
             case 8:
                 cout << "ENTER CONTENT\n";
                 cin >> str;
-                cout << "ENTER LIST NUMBER\n";
-                selected_node = getChoice(0, object.getSize());
+                selected_node = getChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
                 object.orderedInsert(selected_node, &str);
                 break;
             case 9:
-                system("clear");
+                system(clear_console_);
                 object.sortLists();
                 break;
             case 10:
-                system("clear");
+                system(clear_console_);
                 object.balance();
                 break;
             case 11:
-                system("clear");
-                cout << "ENTER NEW SIZE\n"
-                             "0 - BACK\n";
-                selected_node = getChoice(0, 1000);
-                object.resize(selected_node);
+                system(clear_console_);
+                selected_node = getChoice(0, 1000, "ENTER NEW SIZE\n0 - BACK\n");
+                if (selected_node != 0) object.resize(selected_node);
                 break;
             case 12:
-                system("clear");
+                system(clear_console_);
                 f.open(fpath, ios::binary|ios::in);
                 object.loadFromBin(f);
                 f.close();
                 break;
             case 13:
-                system("clear");
+                system(clear_console_);
                 f.open(fpath, ios::binary|ios::out);
                 object.loadToBin(f);
                 f.close();
