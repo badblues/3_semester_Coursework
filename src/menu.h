@@ -6,6 +6,6 @@
 
 #define fpath "tllist_data.bin"
 
-void mainMenu(TLList<string>& object);
+void MainMenu(TLList<string> &object);
 
 

@@ -3,7 +3,7 @@
 #include "src/menu.h"
 
 int main() {
-    TLList<string> obj;
-    mainMenu(obj);
-    return 0;
+  TLList<string> obj;
+  MainMenu(obj);
+  return 0;
 }
