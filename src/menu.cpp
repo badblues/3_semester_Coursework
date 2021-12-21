@@ -101,7 +101,7 @@ void MainMenu(TLList<string> &object) {
         object.orderedInsert(selected_node, &str);
         break;
       case 9:system(clear_console_);
-        object.sortLists();
+        object.sort();
         break;
       case 10:system(clear_console_);
         object.balance();
