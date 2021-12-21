@@ -299,6 +299,23 @@ void TLList<T>::resize(uint new_size) {
 }
 
 template<class T>
+void TLList<T>::loadToBin(fstream &out) {
+  if (out.is_open()) {
+    node<T>* ntmp = node_head_;
+    elem<T>* etmp;
+    while (ntmp) {
+      out.write((char*) &(ntmp->size), sizeof(uint));
+      etmp = ntmp->head;
+      while (etmp) {
+        out.write((char*) (etmp->obj), sizeof(T));
+        etmp = etmp->next;
+      }
+      ntmp = ntmp->next;
+    }
+  }
+}
+
+template<class T>
 void TLList<T>::loadFromBin(fstream &in) {
   if (in.is_open()) {
     while (node_head_)
@@ -309,45 +326,90 @@ void TLList<T>::loadFromBin(fstream &in) {
       size_ = 1;
     }
     T* tmp = new T;
+    uint sz;
     while (in.peek() != EOF) {
-      int64_t c;
-      in.read((char*) &c, sizeof(int64_t));
-      in.seekg(-sizeof(int64_t), ios_base::cur);
+      in.read((char*) &sz, sizeof(uint));
       elem<T>* etmp;
-      while (c != INT64_MAX) {
+      if (sz) {
         in.read((char*) tmp, sizeof(T));
-        if (!ntmp->head) {
-          etmp = ntmp->head = new elem<T>(tmp);
-        } else {
-          etmp = etmp->next = new elem<T>(tmp);
-        }
+        etmp = new elem<T>(tmp);
+        ntmp->head = etmp;
         ntmp->size++;
-        in.read((char*) &c, sizeof(int64_t));
-        in.seekg(-sizeof(int64_t), ios_base::cur);
       }
-      in.seekg(sizeof(int64_t), ios_base::cur);
-      if (in.peek() != EOF) {
-        ntmp = ntmp->next = new node<T>;
-        size_++;
+      for (uint i = 1; i < sz; i++) {
+        in.read((char*) tmp, sizeof(T));
+        etmp->next = new elem<T>(tmp);
+        etmp = etmp->next;
+        ntmp->size++;
       }
+      ntmp->next = new node<T>;
+      ntmp = ntmp->next;
+      size_++;
     }
     delete tmp;
   }
 }
 
-template<class T>
-void TLList<T>::loadToBin(fstream &out) {
+template<>
+void TLList<string>::loadToBin(fstream &out) {
   if (out.is_open()) {
-    node<T>* ntmp = node_head_;
+    node<string>* ntmp = node_head_;
+    elem<string>* etmp;
     while (ntmp) {
-      elem<T>* etmp = ntmp->head;
+      out.write((char*) &(ntmp->size), sizeof(uint));
+      etmp = ntmp->head;
       while (etmp) {
-        out.write((char*) (etmp->obj), sizeof(T));
+        uint sz = (etmp->obj)->size();
+        out.write((char*) &sz, sizeof(sz));
+        out.write((char*) (etmp->obj)->c_str(), sizeof(char) * sz);
         etmp = etmp->next;
       }
-      int64_t tmp = INT64_MAX;
       ntmp = ntmp->next;
-      out.write((char*) &tmp, sizeof(int64_t));
+    }
+  }
+}
+
+template<>
+void TLList<string>::loadFromBin(fstream &in) {
+  if (in.is_open()) {
+    while (node_head_)
+      removeList(0);
+    node<string>* ntmp;
+    if (in.peek() != EOF) {
+      node_head_ = ntmp = new node<string>;
+      size_ = 1;
+    }
+    while (in.peek() != EOF) {
+      uint lsz, esz;
+      in.read((char*) &lsz, sizeof(uint));
+      elem<string>* etmp;
+      if (lsz) {
+        in.read((char*) &esz, sizeof(uint));
+        char* tmp = new char[esz+1];
+        in.read(tmp, esz);
+        tmp[esz] = 0;
+        string* str = new string(tmp);
+        etmp = new elem<string>(str);
+        ntmp->head = etmp;
+        ntmp->size++;
+        delete str;
+        delete[] tmp;
+      }
+      for (uint i = 1; i < lsz; i++) {
+        in.read((char*) &esz, sizeof(uint));
+        char* tmp = new char[esz+1];
+        in.read(tmp, esz);
+        tmp[esz] = 0;
+        string* str = new string(tmp);
+        etmp->next = new elem<string>(str);
+        etmp = etmp->next;
+        ntmp->size++;
+        delete str;
+        delete[] tmp;
+      }
+      ntmp->next = new node<string>;
+      ntmp = ntmp->next;
+      size_++;
     }
   }
 }

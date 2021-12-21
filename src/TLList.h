@@ -6,7 +6,6 @@ typedef unsigned int uint;
 
 //TLLIST for TwoLevelledList
 //TODO test: loading big strings, file interaction, menu
-//TODO fix file loading
 
 template<class T>
 struct elem {
