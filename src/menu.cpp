@@ -15,6 +15,13 @@ uint GetChoice(uint l_gap, uint h_gap, const char* msg) {
   return num;
 }
 
+void ShowListSizes(TLList<string> &object) {
+  uint sz = object.getSize();
+  std::cout << "Size: " << sz << "\n";
+  for (uint i = 0; i < sz; i++)
+    std::cout << i << " list size: " << object.getListSize(i) << "\n";
+}
+
 void ShowMainMenu() {
   cout << "\n===================\n"
           "MENU\n"
@@ -44,7 +51,8 @@ void MainMenu(TLList<string> &object) {
   string str;
   while (flag) {
     system(clear_console_);
-    cout << object;
+    cout << object << "\n";
+    ShowListSizes(object);
     ShowMainMenu();
     choice = GetChoice(0, 13, "");
     switch (choice) {
