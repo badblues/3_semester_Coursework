@@ -8,7 +8,6 @@ using namespace std;
 typedef unsigned int uint;
 
 // TLLIST for TwoLevelledList
-// TODO(badblues): test: loading big strings, file interaction, menu
 
 template<typename T>
 struct elem {

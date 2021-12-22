@@ -103,35 +103,30 @@ void TLList<T>::add(T* obj) {
     node_head_ = new node<T>(obj);
     size_++;
   } else {
-    node<T>* n_tmp = node_head_;
-    while (n_tmp->size >= capacity_ && n_tmp->next) n_tmp = n_tmp->next;
-    if (n_tmp->size < capacity_) {
-      elem<T>* e_tmp = n_tmp->head;
-      if (!e_tmp) {
-        e_tmp = new elem<T>(obj);
-        n_tmp->head = e_tmp;
-        n_tmp->size++;
-      } else {
-        while (e_tmp->next) e_tmp = e_tmp->next;
-        e_tmp->next = new elem<T>(obj);
-        n_tmp->size++;
+    for (uint i = 0; i <= size_; i++) {
+      if (i == size_) {
+        getNode(i - 1)->next = new node<T>(obj);
+        size_++;
+        break;
+      } else if (getListSize(i) < capacity_ && getListSize(i) == 0) {
+        getNode(i)->head = new elem<T>(obj);
+        getNode(i)->size++;
+        break;
+      } else if ((getListSize(i) < capacity_ && getListSize(i) > 0)) {
+        getItem(i, getListSize(i) - 1)->next = new elem<T>(obj);
+        getNode(i)->size++;
+        break;
       }
-    } else {
-      n_tmp->next = new node<T>(obj);
-      size_++;
     }
   }
 }
 
 template<typename T>
 void TLList<T>::addList() {
-  if (!node_head_) {
+  if (size_ == 0)
     node_head_ = new node<T>;
-  } else {
-    node<T>* n_tmp = node_head_;
-    while (n_tmp->next) n_tmp = n_tmp->next;
-    n_tmp->next = new node<T>;
-  }
+  else
+    getNode(size_ - 1)->next = new node<T>;
   size_++;
 }
 
@@ -144,8 +139,7 @@ void TLList<T>::insertList(uint pos) {
     node_head_ = new node<T>;
     node_head_->next = n_tmp;
   } else {
-    node<T>* n_tmp = node_head_;
-    for (uint i = 0; i < pos - 1; i++) n_tmp = n_tmp->next;
+    node<T>* n_tmp = getNode(pos - 1);
     node<T>* n_tmp2 = n_tmp->next;
     n_tmp->next = new node<T>;
     n_tmp->next->next = n_tmp2;
@@ -162,8 +156,7 @@ void TLList<T>::removeList(uint pos) {
     delete node_head_;
     node_head_ = n_tmp;
   } else {
-    node<T>* n_tmp = node_head_;
-    for (uint i = 0; i < pos - 1; i++) n_tmp = n_tmp->next;
+    node<T>* n_tmp = getNode(pos - 1);
     node<T>* n_tmp2 = n_tmp->next;
     n_tmp->next = n_tmp->next->next;
     delete n_tmp2;
@@ -175,8 +168,7 @@ template<typename T>
 void TLList<T>::remove(uint list_num, uint elem_pos) {
   if (list_num >= size_ || elem_pos >= capacity_)
     throw out_of_range("N/A INDEX");
-  node<T>* n_tmp = node_head_;
-  for (uint i = 0; i < list_num; i++) n_tmp = n_tmp->next;
+  node<T>* n_tmp = getNode(list_num);
   if (elem_pos >= n_tmp->size)
     throw out_of_range("N/A INDEX");
   if (elem_pos == 0) {
@@ -184,8 +176,7 @@ void TLList<T>::remove(uint list_num, uint elem_pos) {
     n_tmp->head = n_tmp->head->next;
     delete e_tmp;
   } else {
-    elem<T>* e_tmp = n_tmp->head;
-    for (uint i = 0; i < elem_pos - 1; i++) e_tmp = e_tmp->next;
+    elem<T>* e_tmp = getItem(list_num, elem_pos - 1);
     elem<T>* e_tmp2 = e_tmp->next;
     e_tmp->next = e_tmp->next->next;
     delete e_tmp2;
@@ -197,8 +188,7 @@ template<typename T>
 void TLList<T>::insert(uint list_num, uint elem_pos, T* obj) {
   if (list_num >= size_ || elem_pos >= capacity_)
     throw out_of_range("N/A INDEX");
-  node<T>* n_tmp = node_head_;
-  for (uint i = 0; i < list_num; i++) n_tmp = n_tmp->next;
+  node<T>* n_tmp = getNode(list_num);
   if (elem_pos > n_tmp->size)
     throw out_of_range("N/A INDEX");
   if (n_tmp->size == capacity_)
@@ -279,6 +269,8 @@ void TLList<T>::balance() {
 
 template<typename T>
 void TLList<T>::resize(uint new_size) {
+  if (new_size == 0)
+    throw overflow_error("SIZE CANNOT BE EQUAL TO 0");
   bool flag;
   for (uint i = 0; i < size_; i++) {
     flag = true;
@@ -372,7 +364,8 @@ void TLList<string>::loadFromBin(fstream &in) {
       removeList(0);
     node<string>* n_tmp;
     if (in.peek() != EOF) {
-      node_head_ = n_tmp = new node<string>;
+      n_tmp = new node<string>;
+      node_head_ = n_tmp;
       size_ = 1;
     }
     while (in.peek() != EOF) {
@@ -403,9 +396,11 @@ void TLList<string>::loadFromBin(fstream &in) {
         delete str;
         delete[] tmp;
       }
-      n_tmp->next = new node<string>;
-      n_tmp = n_tmp->next;
-      size_++;
+      if (in.peek() != EOF) {
+        n_tmp->next = new node<string>;
+        n_tmp = n_tmp->next;
+        size_++;
+      }
     }
   }
 }
@@ -450,6 +445,9 @@ class TLList<float>;
 
 template
 class TLList<double>;
+
+template
+class TLList<char>;
 
 template
 class TLList<string>;

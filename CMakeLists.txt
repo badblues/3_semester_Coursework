@@ -7,3 +7,5 @@ set(SOURCES src/TLList.cpp src/menu.cpp)
 
 add_executable(Coursework main.cpp ${SOURCES})
 add_definitions(-Wall)
+
+add_subdirectory(googletest)
