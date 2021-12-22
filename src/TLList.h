@@ -1,5 +1,8 @@
 #pragma once
 #include <iostream>
+#include <string>
+#include <exception>
+#include <fstream>
 
 using namespace std;
 typedef unsigned int uint;
@@ -7,7 +10,7 @@ typedef unsigned int uint;
 // TLLIST for TwoLevelledList
 // TODO(badblues): test: loading big strings, file interaction, menu
 
-template<class T>
+template<typename T>
 struct elem {
   T* obj;
   struct elem* next;
@@ -19,7 +22,7 @@ struct elem {
   ~elem() { delete obj; }
 };
 
-template<class T>
+template<typename T>
 struct node {
   elem<T>* head;
   struct node* next;
@@ -29,7 +32,7 @@ struct node {
   ~node();
 };
 
-template<class T>
+template<typename T>
 class TLList {
   public:
   TLList();
@@ -65,4 +68,27 @@ class TLList {
   node<T>* node_head_;
 };
 
-#include "TLList.inl"
+template<class V>
+  istream &operator>>(istream &is, TLList<V> &tl_list) {
+    V* obj = new V;
+    is >> *obj;
+    tl_list.add(obj);
+    delete obj;
+    return is;
+  }
+
+  template<class V>
+    ostream &operator<<(ostream &os, TLList<V> &tl_list) {
+      node<V>* n_tmp = tl_list.node_head_;
+      while (n_tmp) {
+        elem<V>* e_tmp = n_tmp->head;
+        while (e_tmp) {
+          os << *(e_tmp->obj) << " ";
+          e_tmp = e_tmp->next;
+        }
+        n_tmp = n_tmp->next;
+        if (n_tmp)
+          os << "\n";
+      }
+      return os;
+    }

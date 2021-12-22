@@ -1,24 +1,20 @@
-#pragma once
 #include "TLList.h"
-#include <exception>
-#include <fstream>
-#include <iostream>
 
-template<class T>
+template<typename T>
 node<T>::node(T* o) {
   head = new elem<T>(o);
   next = nullptr;
   size = 1;
 }
 
-template<class T>
+template<typename T>
 node<T>::node() {
   head = nullptr;
   next = nullptr;
   size = 0;
 }
 
-template<class T>
+template<typename T>
 node<T>::~node() {
   while (head != nullptr) {
     elem<T>* tmp = head;
@@ -41,7 +37,7 @@ TLList<T>::TLList(T* object_ptr) {
   capacity_ = 10;
 }
 
-template<class T>
+template<typename T>
 TLList<T>::TLList(TLList<T> &obj) {
   capacity_ = obj.capacity_;
   node<T>* n_tmp2 = obj.node_head_;
@@ -86,22 +82,22 @@ TLList<T>::~TLList() {
   }
 }
 
-template<class T>
+template<typename T>
 T* TLList<T>::getElement(uint list_num, uint elem_pos) {
   return getItem(list_num, elem_pos)->obj;
 }
 
-template<class T>
+template<typename T>
 uint TLList<T>::getSize() {
   return size_;
 }
 
-template<class T>
+template<typename T>
 uint TLList<T>::getListSize(uint list_num) {
   return getNode(list_num)->size;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::add(T* obj) {
   if (!node_head_) {
     node_head_ = new node<T>(obj);
@@ -127,7 +123,7 @@ void TLList<T>::add(T* obj) {
   }
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::addList() {
   if (!node_head_) {
     node_head_ = new node<T>;
@@ -139,7 +135,7 @@ void TLList<T>::addList() {
   size_++;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::insertList(uint pos) {
   if (pos > size_)
     throw out_of_range("N/A INDEX");
@@ -157,7 +153,7 @@ void TLList<T>::insertList(uint pos) {
   size_++;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::removeList(uint pos) {
   if (pos >= size_)
     throw out_of_range("N/A INDEX");
@@ -175,7 +171,7 @@ void TLList<T>::removeList(uint pos) {
   size_--;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::remove(uint list_num, uint elem_pos) {
   if (list_num >= size_ || elem_pos >= capacity_)
     throw out_of_range("N/A INDEX");
@@ -197,7 +193,7 @@ void TLList<T>::remove(uint list_num, uint elem_pos) {
   n_tmp->size--;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::insert(uint list_num, uint elem_pos, T* obj) {
   if (list_num >= size_ || elem_pos >= capacity_)
     throw out_of_range("N/A INDEX");
@@ -220,7 +216,7 @@ void TLList<T>::insert(uint list_num, uint elem_pos, T* obj) {
   n_tmp->size++;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::sort() {
   node<T>* n_tmp = node_head_;
   int node_id = 0;
@@ -243,19 +239,19 @@ void TLList<T>::sort() {
   }
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::orderedAdd(T* obj) {
   add(obj);
   sort();
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::orderedInsert(uint list_num, T* obj) {
   insert(list_num, 0, obj);
   sort();
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::balance() {
   uint sum = 0;
   for (uint i = 0; i < size_; i++) sum += getListSize(i);
@@ -281,7 +277,7 @@ void TLList<T>::balance() {
   delete[] buf;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::resize(uint new_size) {
   bool flag;
   for (uint i = 0; i < size_; i++) {
@@ -298,7 +294,7 @@ void TLList<T>::resize(uint new_size) {
   capacity_ = new_size;
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::loadToBin(fstream &out) {
   if (out.is_open()) {
     node<T>* n_tmp = node_head_;
@@ -315,7 +311,7 @@ void TLList<T>::loadToBin(fstream &out) {
   }
 }
 
-template<class T>
+template<typename T>
 void TLList<T>::loadFromBin(fstream &in) {
   if (in.is_open()) {
     while (node_head_)
@@ -385,7 +381,7 @@ void TLList<string>::loadFromBin(fstream &in) {
       elem<string>* e_tmp;
       if (lsz) {
         in.read((char*) &esz, sizeof(uint));
-        char* tmp = new char[esz+1];
+        char* tmp = new char[esz + 1];
         in.read(tmp, esz);
         tmp[esz] = 0;
         string* str = new string(tmp);
@@ -397,7 +393,7 @@ void TLList<string>::loadFromBin(fstream &in) {
       }
       for (uint i = 1; i < lsz; i++) {
         in.read((char*) &esz, sizeof(uint));
-        char* tmp = new char[esz+1];
+        char* tmp = new char[esz + 1];
         in.read(tmp, esz);
         tmp[esz] = 0;
         string* str = new string(tmp);
@@ -414,32 +410,7 @@ void TLList<string>::loadFromBin(fstream &in) {
   }
 }
 
-template<class V>
-istream &operator>>(istream &is, TLList<V> &tl_list) {
-  V* obj = new V;
-  is >> *obj;
-  tl_list.add(obj);
-  delete obj;
-  return is;
-}
-
-template<class V>
-ostream &operator<<(ostream &os, TLList<V> &tl_list) {
-  node<V>* n_tmp = tl_list.node_head_;
-  while (n_tmp) {
-    elem<V>* e_tmp = n_tmp->head;
-    while (e_tmp) {
-      os << *(e_tmp->obj) << " ";
-      e_tmp = e_tmp->next;
-    }
-    n_tmp = n_tmp->next;
-    if (n_tmp)
-      os << "\n";
-  }
-  return os;
-}
-
-template<class T>
+template<typename T>
 void TLList<T>::swap(uint l, uint p) {
   elem<T>* e_tmp1 = getItem(l, p);
   elem<T>* e_tmp2 = getItem(l, p + 1);
@@ -452,14 +423,14 @@ void TLList<T>::swap(uint l, uint p) {
     getNode(l)->head = e_tmp2;
 }
 
-template<class T>
+template<typename T>
 node<T>* TLList<T>::getNode(uint l) {
   node<T>* n_tmp = node_head_;
   for (uint i = 0; i < l && n_tmp; i++) n_tmp = n_tmp->next;
   return n_tmp;
 }
 
-template<class T>
+template<typename T>
 elem<T>* TLList<T>::getItem(uint l, uint p) {
   node<T>* n_tmp = node_head_;
   elem<T>* e_tmp;
@@ -470,3 +441,15 @@ elem<T>* TLList<T>::getItem(uint l, uint p) {
   }
   return e_tmp;
 }
+
+template
+class TLList<int>;
+
+template
+class TLList<float>;
+
+template
+class TLList<double>;
+
+template
+class TLList<string>;
