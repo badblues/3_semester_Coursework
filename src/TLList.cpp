@@ -93,6 +93,11 @@ uint TLList<T>::getSize() {
 }
 
 template<typename T>
+uint TLList<T>::getCapacity() {
+  return capacity_;
+}
+
+template<typename T>
 uint TLList<T>::getListSize(uint list_num) {
   return getNode(list_num)->size;
 }
@@ -247,11 +252,11 @@ void TLList<T>::balance() {
   for (uint i = 0; i < size_; i++) sum += getListSize(i);
   uint n = sum / size_;
   for (uint i = 0; i < size_; i++) {
-    if (getListSize(i) >= n) continue;
-    for (uint j = 0; j < size_; j++) {
-      if (getListSize(j) <= n) continue;
-      insert(i, getListSize(i), getItem(j, getListSize(j) - 1)->obj);
-      remove(j, getListSize(j) - 1);
+    for (uint j = 0; j < size_ && getListSize(i) < n; j++) {
+      while (getListSize(j) > n) {
+        insert(i, getListSize(i), getItem(j, getListSize(j) - 1)->obj);
+        remove(j, getListSize(j) - 1);
+      }
     }
   }
   T* buf = new T[sum - (n * size_)];
@@ -448,6 +453,18 @@ class TLList<double>;
 
 template
 class TLList<char>;
+
+template
+class TLList<unsigned int>;
+
+template
+class TLList<long>;
+
+template
+class TLList<long long>;
+
+template
+class TLList<short>;
 
 template
 class TLList<string>;

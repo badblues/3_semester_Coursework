@@ -40,6 +40,7 @@ class TLList {
   ~TLList();
   T* getElement(uint list_num, uint elem_pos);
   uint getSize();
+  uint getCapacity();
   uint getListSize(uint list_num);
   void add(T* obj);
   void addList();
