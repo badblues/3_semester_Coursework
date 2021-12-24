@@ -88,6 +88,16 @@ T* TLList<T>::getElement(uint list_num, uint elem_pos) {
 }
 
 template<typename T>
+T* TLList<T>::getElement(uint index) {
+  uint l_num = 0;
+  for (uint i = 0; i < size_ && index < getListSize(i); i++) {
+      index -= getListSize(i);
+      l_num++;
+  }
+  return getItem(l_num, index)->obj;
+}
+
+template<typename T>
 uint TLList<T>::getSize() {
   return size_;
 }
@@ -182,9 +192,40 @@ void TLList<T>::remove(uint list_num, uint elem_pos) {
     delete e_tmp;
   } else {
     elem<T>* e_tmp = getItem(list_num, elem_pos - 1);
-    elem<T>* e_tmp2 = e_tmp->next;
-    e_tmp->next = e_tmp->next->next;
-    delete e_tmp2;
+    if (!e_tmp->next) {
+      delete e_tmp;
+    } else {
+      elem<T>* e_tmp2 = e_tmp->next;
+      e_tmp->next = e_tmp->next->next;
+      delete e_tmp2;
+    }
+  }
+  n_tmp->size--;
+}
+
+template<typename T>
+void TLList<T>::remove(uint index) {
+  uint l_num = 0;
+  for (uint i = 0; i <= size_ && index >= getListSize(i); i++) {
+    if (i == size_)
+      throw out_of_range("N/A INDEX");
+    index -= getListSize(i);
+    l_num++;
+  }
+  node<T>* n_tmp = getNode(l_num);
+  if (index == 0) {
+    elem<T>* e_tmp = n_tmp->head;
+    n_tmp->head = n_tmp->head->next;
+    delete e_tmp;
+  } else {
+    elem<T>* e_tmp = getItem(l_num, index - 1);
+    if (!e_tmp->next) {
+      delete e_tmp;
+    } else {
+      elem<T>* e_tmp2 = e_tmp->next;
+      e_tmp->next = e_tmp->next->next;
+      delete e_tmp2;
+    }
   }
   n_tmp->size--;
 }
@@ -205,6 +246,31 @@ void TLList<T>::insert(uint list_num, uint elem_pos, T* obj) {
   } else {
     elem<T>* e_tmp = n_tmp->head;
     for (uint i = 0; i < elem_pos - 1; i++) e_tmp = e_tmp->next;
+    e_tmp2->next = e_tmp->next;
+    e_tmp->next = e_tmp2;
+  }
+  n_tmp->size++;
+}
+
+template<typename T>
+void TLList<T>::insert(uint index, T* obj) {
+  uint l_num = 0;
+  for (uint i = 0; i <= size_ && index > getListSize(i); i++) {
+    if (i == size_)
+      throw out_of_range("N/A INDEX");
+    index -= getListSize(i);
+    l_num++;
+  }
+  if (getListSize(l_num) == capacity_)
+    throw overflow_error("ELEMENTS OVERFLOW");
+  node<T>* n_tmp = getNode(l_num);
+  elem<T>* e_tmp2 = new elem<T>(obj);
+  if (index == 0) {
+    e_tmp2->next = n_tmp->head;
+    n_tmp->head = e_tmp2;
+  } else {
+    elem<T>* e_tmp = n_tmp->head;
+    for (uint i = 0; i < index - 1; i++) e_tmp = e_tmp->next;
     e_tmp2->next = e_tmp->next;
     e_tmp->next = e_tmp2;
   }
@@ -433,13 +499,22 @@ node<T>* TLList<T>::getNode(uint l) {
 template<typename T>
 elem<T>* TLList<T>::getItem(uint l, uint p) {
   node<T>* n_tmp = node_head_;
-  elem<T>* e_tmp;
+  elem<T>* e_tmp = nullptr;
   for (uint i = 0; i < l && n_tmp; i++) n_tmp = n_tmp->next;
   if (n_tmp) {
     e_tmp = n_tmp->head;
     for (uint i = 0; i < p && e_tmp; i++) e_tmp = e_tmp->next;
   }
   return e_tmp;
+}
+template<class T>
+T &TLList<T>::operator[](uint index) {
+  uint l_num = 0;
+  for (uint i = 0; i < size_ && index >= getListSize(i); i++) {
+      index -= getListSize(i);
+      l_num++;
+  }
+  return *(getItem(l_num, index)->obj);
 }
 
 template

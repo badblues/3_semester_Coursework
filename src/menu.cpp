@@ -56,12 +56,17 @@ void MainMenu(TLList<string> &object) {
     ShowMainMenu();
     choice = GetChoice(0, 13, "");
     switch (choice) {
-      case 0:flag = false;
+      case 0:
+        flag = false;
         break;
-      case 1:system(clear_console_);
+      case 1:
+        system(clear_console_);
         object.addList();
         break;
-      case 2:system(clear_console_);
+      case 2:
+        system(clear_console_);
+        cout << object << "\n";
+        ShowListSizes(object);
         selected_node = GetChoice(0, object.getSize(), "ENTER POSITION\n");
         try {
           object.insertList(selected_node);
@@ -69,7 +74,10 @@ void MainMenu(TLList<string> &object) {
           cout << ex.what() << "\n";
         }
         break;
-      case 3:system(clear_console_);
+      case 3:
+        system(clear_console_);
+        cout << object << "\n";
+        ShowListSizes(object);
         selected_node = GetChoice(0, object.getSize() - 1, "ENTER POSITION\n");
         try {
           object.removeList(selected_node);
@@ -77,11 +85,13 @@ void MainMenu(TLList<string> &object) {
           cout << ex.what() << "\n";
         }
         break;
-      case 4:cout << "ENTER CONTENT\n";
+      case 4:
+        cout << "ENTER CONTENT\n";
         cin >> str;
         object.add(&str);
         break;
-      case 5:cout << "ENTER CONTENT\n";
+      case 5:
+        cout << "ENTER CONTENT\n";
         cin >> str;
         selected_node = GetChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
         selected_elem = GetChoice(0, object.getListSize(selected_node), "ENTER POSITION\n");
@@ -91,7 +101,8 @@ void MainMenu(TLList<string> &object) {
           cout << ex.what() << "\n";
         }
         break;
-      case 6:selected_node = GetChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
+      case 6:
+        selected_node = GetChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
         selected_elem = GetChoice(0, object.getListSize(selected_node), "ENTER POSITION\n");
         try {
           object.remove(selected_node, selected_elem);
@@ -99,31 +110,38 @@ void MainMenu(TLList<string> &object) {
           cout << ex.what() << "\n";
         }
         break;
-      case 7:cout << "ENTER CONTENT\n";
+      case 7:
+        cout << "ENTER CONTENT\n";
         cin >> str;
         object.orderedAdd(&str);
         break;
-      case 8:cout << "ENTER CONTENT\n";
+      case 8:
+        cout << "ENTER CONTENT\n";
         cin >> str;
         selected_node = GetChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
         object.orderedInsert(selected_node, &str);
         break;
-      case 9:system(clear_console_);
+      case 9:
         object.sort();
         break;
-      case 10:system(clear_console_);
+      case 10:
         object.balance();
         break;
-      case 11:system(clear_console_);
+      case 11:
+        system(clear_console_);
+        cout << object << "\n";
+        ShowListSizes(object);
         selected_node = GetChoice(0, 1000, "ENTER NEW SIZE\n0 - BACK\n");
         if (selected_node != 0) object.resize(selected_node);
         break;
-      case 12:system(clear_console_);
+      case 12:
+        system(clear_console_);
         f.open(fpath, ios::binary | ios::in);
         object.loadFromBin(f);
         f.close();
         break;
-      case 13:system(clear_console_);
+      case 13:
+        system(clear_console_);
         f.open(fpath, ios::binary | ios::out);
         object.loadToBin(f);
         f.close();
