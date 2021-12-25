@@ -93,7 +93,7 @@ void MainMenu(TLList<string> &object) {
       case 5:
         cout << "ENTER CONTENT\n";
         cin >> str;
-        selected_node = GetChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
+        selected_node = GetChoice(0, object.getSize() - 1, "ENTER LIST NUMBER\n");
         selected_elem = GetChoice(0, object.getListSize(selected_node), "ENTER POSITION\n");
         try {
           object.insert(selected_node, selected_elem, &str);
@@ -102,8 +102,8 @@ void MainMenu(TLList<string> &object) {
         }
         break;
       case 6:
-        selected_node = GetChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
-        selected_elem = GetChoice(0, object.getListSize(selected_node), "ENTER POSITION\n");
+        selected_node = GetChoice(0, object.getSize() - 1, "ENTER LIST NUMBER\n");
+        selected_elem = GetChoice(0, object.getListSize(selected_node) - 1, "ENTER POSITION\n");
         try {
           object.remove(selected_node, selected_elem);
         } catch (exception &ex) {
