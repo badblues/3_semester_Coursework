@@ -229,8 +229,6 @@ void TLList<T>::insert(uint index, T* obj) {
     index -= getListSize(i);
     l_num++;
   }
-  if (getListSize(l_num) == capacity_)
-    throw overflow_error("ELEMENTS OVERFLOW");
   node<T>* n_tmp = getNode(l_num);
   elem<T>* e_tmp2 = new elem<T>(obj);
   if (index == 0) {
