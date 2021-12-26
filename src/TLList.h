@@ -7,10 +7,8 @@
 using namespace std;
 typedef unsigned int uint;
 
-// what I did: removed copy constructor, changed keeping type,
-
 // TLLIST for TwoLevelledList
-// TODO insert(new), balance, resize
+// TODO insert(new)
 template<typename T>
 struct elem {
   T* obj;

@@ -201,8 +201,6 @@ void TLList<T>::insert(uint list_num, uint elem_pos, T* obj) {
   node<T>* n_tmp = getNode(list_num);
   if (elem_pos > n_tmp->size)
     throw out_of_range("N/A INDEX");
-  if (n_tmp->size == capacity_)
-    throw overflow_error("ELEMENTS OVERFLOW");
   elem<T>* e_tmp2 = new elem<T>(obj);
   if (elem_pos == 0) {
     e_tmp2->next = n_tmp->head;
@@ -213,6 +211,13 @@ void TLList<T>::insert(uint list_num, uint elem_pos, T* obj) {
     e_tmp->next = e_tmp2;
   }
   n_tmp->size++;
+  while (n_tmp->size > capacity_) {
+    if (!n_tmp->next)
+      addList();
+    move(list_num, n_tmp->size - 1, list_num + 1, 0);
+    list_num++;
+    n_tmp = n_tmp->next;
+  }
 }
 
 template<typename T>
@@ -424,6 +429,7 @@ void TLList<string>::loadFromBin(fstream &in) {
         e_tmp = new elem<string>(str);
         n_tmp->head = e_tmp;
         n_tmp->size++;
+        delete[] tmp;
       }
       for (uint i = 1; i < lsz; i++) {
         in.read((char*) &esz, sizeof(uint));
@@ -434,6 +440,7 @@ void TLList<string>::loadFromBin(fstream &in) {
         e_tmp->next = new elem<string>(str);
         e_tmp = e_tmp->next;
         n_tmp->size++;
+        delete[] tmp;
       }
       if (in.peek() != EOF) {
         n_tmp->next = new node<string>;
@@ -459,7 +466,7 @@ void TLList<T>::swap(uint l, uint p) {
 
 template<typename T>
 void TLList<T>::move(uint l1, uint p1, uint l2, uint p2) {
-  if (l1 >= size_ || p1 >= capacity_ || l2 >= size_ || p2 >= capacity_)
+  if (l1 >= size_ || l2 >= size_)
     throw out_of_range("N/A INDEX");
   node<T>* n_tmp1 = getNode(l1);
   node<T>* n_tmp2 = getNode(l2);
