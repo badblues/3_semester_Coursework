@@ -243,6 +243,13 @@ void TLList<T>::insert(uint index, T* obj) {
     e_tmp->next = e_tmp2;
   }
   n_tmp->size++;
+  while (n_tmp->size > capacity_) {
+    if (!n_tmp->next)
+      addList();
+    move(l_num, n_tmp->size - 1, l_num + 1, 0);
+    l_num++;
+    n_tmp = n_tmp->next;
+  }
 }
 
 template<typename T>
