@@ -48,7 +48,7 @@ void MainMenu(TLList<string> &object) {
   uint selected_elem;
   bool flag = true;
   fstream f;
-  string str;
+  string* str;
   while (flag) {
     system(clear_console_);
     cout << object << "\n";
@@ -87,16 +87,18 @@ void MainMenu(TLList<string> &object) {
         break;
       case 4:
         cout << "ENTER CONTENT\n";
-        cin >> str;
-        object.add(&str);
+        str = new string;
+        cin >> *str;
+        object.add(str);
         break;
       case 5:
         cout << "ENTER CONTENT\n";
-        cin >> str;
+        str = new string;
+        cin >> *str;
         selected_node = GetChoice(0, object.getSize() - 1, "ENTER LIST NUMBER\n");
         selected_elem = GetChoice(0, object.getListSize(selected_node), "ENTER POSITION\n");
         try {
-          object.insert(selected_node, selected_elem, &str);
+          object.insert(selected_node, selected_elem, str);
         } catch (exception &ex) {
           cout << ex.what() << "\n";
         }
@@ -112,14 +114,16 @@ void MainMenu(TLList<string> &object) {
         break;
       case 7:
         cout << "ENTER CONTENT\n";
-        cin >> str;
-        object.orderedAdd(&str);
+        str = new string;
+        cin >> *str;
+        object.orderedAdd(str);
         break;
       case 8:
         cout << "ENTER CONTENT\n";
-        cin >> str;
-        selected_node = GetChoice(0, object.getSize(), "ENTER LIST NUMBER\n");
-        object.orderedInsert(selected_node, &str);
+        str = new string;
+        cin >> *str;
+        selected_node = GetChoice(0, object.getSize() - 1, "ENTER LIST NUMBER\n");
+        object.orderedInsert(selected_node, str);
         break;
       case 9:
         object.sort();
