@@ -8,12 +8,17 @@ using namespace std;
 typedef unsigned int uint;
 
 // TLLIST for TwoLevelledList
-// TODO insert(new)
+// TODO  sort
+
 template<typename T>
 struct elem {
   T* obj;
   struct elem* next;
-  explicit elem(T* o) { obj = o; next = nullptr; }
+  explicit elem(T* o) {
+    obj = new T;
+    *obj = *o;
+    next = nullptr;
+  }
   ~elem() { delete obj; }
 };
 
@@ -57,7 +62,7 @@ class TLList {
   friend istream &operator>>(istream &is, TLList<V> &tl_list);
   template<class V>
   friend ostream &operator<<(ostream &os, TLList<V> &tl_list);
-  T& operator[](uint index);
+  T &operator[](uint index);
   private:
   void swap(uint l, uint p);
   void move(uint l1, uint p1, uint l2, uint p2);
@@ -73,6 +78,7 @@ istream &operator>>(istream &is, TLList<V> &tl_list) {
   V* obj = new V;
   is >> *obj;
   tl_list.add(obj);
+  delete obj;
   return is;
 }
 

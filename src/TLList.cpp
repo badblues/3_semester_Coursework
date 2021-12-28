@@ -252,24 +252,30 @@ void TLList<T>::insert(uint index, T* obj) {
 
 template<typename T>
 void TLList<T>::sort() {
-  node<T>* n_tmp = node_head_;
-  int node_id = 0;
-  while (n_tmp) {
-    uint num = 0;
-    while (num < n_tmp->size) {
-      uint ct = 0;
-      elem<T>* e_tmp = n_tmp->head;
-      while (e_tmp->next) {
-        if (*(e_tmp->obj) > *(e_tmp->next->obj))
-          swap(node_id, ct);
-        else
-          e_tmp = e_tmp->next;
-        ct++;
-      }
-      num++;
+  uint sum = 0;
+  for (uint i = 0; i < size_; i++) sum += getListSize(i);
+  for (uint i = 0; i < sum; i++) {
+    uint cur_l = i / capacity_;
+    uint cur_e = i % capacity_;
+    uint min_l = 0, min_e = i;
+    for (uint j = 0; j < size_ && min_e >= getListSize(j); j++) {
+      min_e -= getListSize(j);
+      min_l++;
     }
-    node_id++;
-    n_tmp = n_tmp->next;
+    for (uint j = min_e; j < getListSize(min_l); j++)
+      if (*(getElement(min_l, j)) < *(getElement(min_l, min_e))) {
+        min_e = j;
+      }
+    for (uint j = cur_l + 1; j < size_; j++) {
+      for (uint k = 0; k < getListSize(j); k++)
+      if (*(getElement(j, k)) < *(getElement(min_l, min_e))) {
+        min_l = j;
+        min_e = k;
+      }
+    }
+    move(min_l, min_e, cur_l, cur_e);  //absolete
+    for (uint j = cur_l; j < size_ && getListSize(j) > capacity_; j++)
+      move(j, getListSize(j) - 1, j + 1, 0);
   }
 }
 
@@ -376,6 +382,7 @@ void TLList<T>::loadFromBin(fstream &in) {
         e_tmp = new elem<T>(tmp);
         n_tmp->head = e_tmp;
         n_tmp->size++;
+        delete tmp;
       }
       for (uint i = 1; i < sz; i++) {
         tmp = new T;
@@ -383,6 +390,7 @@ void TLList<T>::loadFromBin(fstream &in) {
         e_tmp->next = new elem<T>(tmp);
         e_tmp = e_tmp->next;
         n_tmp->size++;
+        delete tmp;
       }
       n_tmp->next = new node<T>;
       n_tmp = n_tmp->next;
@@ -435,6 +443,7 @@ void TLList<string>::loadFromBin(fstream &in) {
         n_tmp->head = e_tmp;
         n_tmp->size++;
         delete[] tmp;
+        delete str;
       }
       for (uint i = 1; i < lsz; i++) {
         in.read((char*) &esz, sizeof(uint));
@@ -446,6 +455,7 @@ void TLList<string>::loadFromBin(fstream &in) {
         e_tmp = e_tmp->next;
         n_tmp->size++;
         delete[] tmp;
+        delete str;
       }
       if (in.peek() != EOF) {
         n_tmp->next = new node<string>;
@@ -477,6 +487,7 @@ void TLList<T>::move(uint l1, uint p1, uint l2, uint p2) {
   node<T>* n_tmp2 = getNode(l2);
   if (p1 >= n_tmp1->size || p2 > n_tmp2->size)
     throw out_of_range("N/A INDEX");
+  if (l1 == l2 && p1 < p2) p2--;
   elem<T>* e_tmp;
   elem<T>* e_tmp2;
   if (p1 == 0) {

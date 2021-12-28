@@ -36,8 +36,10 @@ void ShowMainMenu() {
           "  9 SORT\n"
           "  10 BALANCE\n"
           "  11 RESIZE\n"
-          "  12 LOAD FROM FILE\n"
-          "  13 LOAD TO FILE\n"
+          "  12 LOAD FROM TEXT FILE\n"
+          "  13 SAVE TO TEXT FILE\n"
+          "  14 LOAD FROM BINARY\n"
+          "  15 SAVE TO BINARY\n"
           "  0 EXIT\n"
           "===================\n";
 }
@@ -54,7 +56,7 @@ void MainMenu(TLList<string> &object) {
     cout << object << "\n";
     ShowListSizes(object);
     ShowMainMenu();
-    choice = GetChoice(0, 13, "");
+    choice = GetChoice(0, 15, "");
     switch (choice) {
       case 0:
         flag = false;
@@ -90,6 +92,7 @@ void MainMenu(TLList<string> &object) {
         str = new string;
         cin >> *str;
         object.add(str);
+        delete str;
         break;
       case 5:
         cout << "ENTER CONTENT\n";
@@ -102,6 +105,7 @@ void MainMenu(TLList<string> &object) {
         } catch (exception &ex) {
           cout << ex.what() << "\n";
         }
+        delete str;
         break;
       case 6:
         selected_node = GetChoice(0, object.getSize() - 1, "ENTER LIST NUMBER\n");
@@ -117,6 +121,7 @@ void MainMenu(TLList<string> &object) {
         str = new string;
         cin >> *str;
         object.orderedAdd(str);
+        delete str;
         break;
       case 8:
         cout << "ENTER CONTENT\n";
@@ -124,6 +129,7 @@ void MainMenu(TLList<string> &object) {
         cin >> *str;
         selected_node = GetChoice(0, object.getSize() - 1, "ENTER LIST NUMBER\n");
         object.orderedInsert(selected_node, str);
+        delete str;
         break;
       case 9:
         object.sort();
@@ -140,13 +146,28 @@ void MainMenu(TLList<string> &object) {
         break;
       case 12:
         system(clear_console_);
-        f.open(fpath, ios::binary | ios::in);
-        object.loadFromBin(f);
+        f.open(textpath, ios::in);
+        while ( object.getSize() > 0 )
+          object.removeList(0);
+        while (!f.eof())
+          f >> object;
         f.close();
         break;
       case 13:
         system(clear_console_);
-        f.open(fpath, ios::binary | ios::out);
+        f.open(textpath, ios::out);
+        f << object;
+        f.close();
+        break;
+      case 14:
+        system(clear_console_);
+        f.open(binpath, ios::binary | ios::in);
+        object.loadFromBin(f);
+        f.close();
+        break;
+      case 15:
+        system(clear_console_);
+        f.open(binpath, ios::binary | ios::out);
         object.loadToBin(f);
         f.close();
         break;

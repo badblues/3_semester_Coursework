@@ -4,7 +4,8 @@
 #include <exception>
 #include "TLList.h"
 
-#define fpath "tllist_data.bin"
+#define binpath "tllist_data.bin"
+#define textpath "tllist.txt"
 
 void MainMenu(TLList<string> &object);
 
